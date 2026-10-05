@@ -1,0 +1,1480 @@
+@font-face {
+  font-family: "Press Start 2P";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/fonts/press-start-2p.ttf") format("truetype");
+}
+@font-face {
+  font-family: "VT323";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/fonts/vt323.ttf") format("truetype");
+}
+:root {
+  --ink: #293a40;
+  --muted: #637073;
+  --paper: #f7f3e9;
+  --line: #d9d8cc;
+  --deep: #263a45;
+  --mint: #8cc9b0;
+  --mono: "VT323", monospace;
+  --body: "VT323", monospace;
+  --display: "Press Start 2P", monospace;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+body {
+  margin: 0;
+  background: var(--deep);
+  color: var(--ink);
+  font: 16px/1.55 var(--body);
+}
+button {
+  font: inherit;
+  cursor: pointer;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button:focus-visible,
+a:focus-visible,
+canvas:focus-visible {
+  outline: 3px solid #f3b86a;
+  outline-offset: 4px;
+}
+a:hover {
+  text-decoration: underline;
+}
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+[hidden] {
+  display: none !important;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+main,
+.game-shell,
+.canvas-wrap {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.game-shell {
+  background: var(--deep);
+}
+#room {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  outline-offset: -5px;
+  cursor: crosshair;
+  touch-action: none;
+}
+.game-top {
+  position: absolute;
+  z-index: 2;
+  top: max(20px, env(safe-area-inset-top));
+  left: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  pointer-events: none;
+  color: #e7e8da;
+  font: 11px var(--mono);
+  letter-spacing: 0.7px;
+}
+.studio-name,
+.top-actions {
+  background: #1c2b35e8;
+  border: 1px solid #53676a;
+  padding: 12px 15px;
+  box-shadow: 3px 3px 0 #192b34;
+}
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 8px 10px 8px 15px;
+  pointer-events: auto;
+}
+#visited-count {
+  color: #bdcec5;
+  font-size: 10px;
+  letter-spacing: 0;
+}
+.live-light {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: var(--mint);
+  margin-right: 7px;
+}
+#toggle-directory {
+  border: 1px solid #85918b;
+  background: #edebd9;
+  color: var(--ink);
+  font: 11px var(--mono);
+  padding: 8px 12px;
+}
+#toggle-directory:hover,
+#toggle-directory[aria-expanded="true"] {
+  background: #f3c56f;
+}
+.welcome-bubble {
+  position: absolute;
+  top: 90px;
+  left: 24px;
+  max-width: 245px;
+  padding: 13px 34px 13px 15px;
+  background: #f3efdf;
+  border: 2px solid #152630;
+  box-shadow: 4px 4px 0 #152630;
+  font-size: 12px;
+  line-height: 1.6;
+}
+.welcome-bubble:after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 18px;
+  width: 12px;
+  height: 12px;
+  background: #f3efdf;
+  border-bottom: 2px solid #152630;
+  border-right: 2px solid #152630;
+  transform: skewY(35deg);
+}
+.welcome-bubble button {
+  position: absolute;
+  right: 8px;
+  top: 4px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 20px;
+}
+.room-status {
+  position: absolute;
+  bottom: 82px;
+  left: 20%;
+  right: 20%;
+  text-align: center;
+  font: 11px var(--mono);
+  color: #dce4da;
+  pointer-events: none;
+  text-shadow: 1px 1px #172a32;
+}
+.game-controls {
+  position: absolute;
+  z-index: 2;
+  bottom: max(22px, env(safe-area-inset-bottom));
+  left: 24px;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 12px 15px;
+  background: #1c2b35e8;
+  border: 1px solid #53676a;
+  color: #cbd5ce;
+  font-size: 11px;
+  box-shadow: 3px 3px 0 #192b34;
+}
+.key {
+  display: inline-block;
+  min-width: 20px;
+  padding: 1px 5px;
+  background: #344750;
+  border: 1px solid #53676a;
+  color: #f3efdf;
+  font: 10px var(--mono);
+  margin-right: 5px;
+}
+.game-controls button {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: #cbd5ce;
+  font-size: 11px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.touch-hint {
+  display: none;
+}
+.eyebrow {
+  font: 10px var(--mono);
+  letter-spacing: 1.4px;
+  color: var(--muted);
+  display: block;
+  margin: 0 0 10px;
+}
+.minimap-hud {
+  position: absolute;
+  right: 24px;
+  bottom: max(22px, env(safe-area-inset-bottom));
+  padding: 10px;
+  background: #1c2b35e8;
+  border: 1px solid #53676a;
+  box-shadow: 3px 3px 0 #192b34;
+  pointer-events: none;
+}
+.minimap-hud .eyebrow {
+  color: #bdcec5;
+  font-size: 8px;
+  letter-spacing: 1px;
+  text-align: center;
+  margin: 0 0 8px;
+}
+#minimap {
+  width: 98px;
+  height: 98px;
+  display: block;
+  image-rendering: pixelated;
+  border: 2px solid #82968a;
+  background: #dddccc;
+}
+.explore-panel {
+  position: absolute;
+  z-index: 3;
+  right: 24px;
+  top: 82px;
+  width: 285px;
+  max-height: calc(100% - 108px);
+  overflow-y: auto;
+  background: #eeece1;
+  border: 2px solid #243840;
+  padding: 24px 20px;
+  box-shadow: 5px 5px 0 #15263080;
+}
+.panel-intro h2 {
+  font-size: 25px;
+  font-weight: 600;
+  letter-spacing: -0.7px;
+  line-height: 1.2;
+  margin-bottom: 9px;
+}
+.panel-intro p {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 21px;
+}
+.directory {
+  display: flex;
+  flex-direction: column;
+}
+.directory button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--line);
+  text-align: left;
+  color: var(--ink);
+}
+.directory button:hover strong {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.station-icon {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  font: 10px var(--mono);
+  background: #dedfd2;
+  color: #4f6761;
+  border: 1px solid #c6ccbd;
+}
+.directory button[data-visited="true"] .station-icon {
+  background: #cce0c5;
+}
+.directory strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+}
+.directory small {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+}
+.visit-mark {
+  margin-left: auto;
+  color: #65796f;
+  font: 14px var(--mono);
+}
+dialog {
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 0;
+  width: min(650px, calc(100% - 32px));
+  max-height: 85svh;
+  color: var(--ink);
+  box-shadow: 8px 8px 0 #15263050;
+}
+dialog::backdrop {
+  background: #112029a8;
+  backdrop-filter: blur(3px);
+}
+.dialog-top {
+  padding: 18px 26px 14px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dialog-top .eyebrow {
+  margin: 0;
+}
+.dialog-top button {
+  background: none;
+  border: 0;
+  color: var(--ink);
+  font-size: 26px;
+  line-height: 1;
+}
+.dialog-top button:hover {
+  color: #ad6d36;
+}
+#dialog-content {
+  padding: 27px;
+}
+#dialog-content h2 {
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -0.8px;
+  margin-bottom: 18px;
+}
+#dialog-content p {
+  font-size: 16px;
+  color: #526467;
+}
+#dialog-content .lead {
+  font-size: 20px;
+  color: var(--ink);
+}
+.topic-meta {
+  font: 11px var(--mono);
+  color: var(--muted);
+  margin: 22px 0;
+}
+.project-entry {
+  padding: 20px 0;
+  border-top: 1px solid var(--line);
+}
+.project-entry h3 {
+  margin: 0 0 5px;
+  font-size: 21px;
+}
+.project-entry p {
+  margin-bottom: 10px !important;
+  font-size: 15px !important;
+}
+.project-entry .topic-meta {
+  font-size: 10px;
+  margin: 0;
+}
+.content-link {
+  display: inline-block;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 10px 16px;
+  margin: 6px 8px 0 0;
+  font-size: 13px;
+}
+.content-link:hover {
+  background: #435b60;
+  text-decoration: none;
+}
+.dialog-bottom {
+  border-top: 1px solid var(--line);
+  padding: 16px 26px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.dialog-bottom span {
+  font: 10px var(--mono);
+  color: var(--muted);
+}
+.dialog-bottom button {
+  background: none;
+  border: 1px solid #81918a;
+  border-radius: 2px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: var(--ink);
+}
+@media (max-width: 700px) {
+  .game-top {
+    top: max(14px, env(safe-area-inset-top));
+    left: 14px;
+    right: 14px;
+    gap: 8px;
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+  .studio-name {
+    padding: 12px 10px;
+  }
+  .top-actions {
+    padding: 5px;
+    gap: 0;
+  }
+  #visited-count {
+    display: none;
+  }
+  #toggle-directory {
+    font-size: 10px;
+    padding: 7px 9px;
+  }
+  .welcome-bubble {
+    top: 74px;
+    left: 14px;
+    font-size: 11px;
+    max-width: 205px;
+    padding: 10px 27px 10px 12px;
+  }
+  .game-controls {
+    bottom: max(14px, env(safe-area-inset-bottom));
+    left: 14px;
+    right: 14px;
+    gap: 12px;
+    justify-content: space-between;
+    padding: 12px 10px;
+    font-size: 10px;
+  }
+  .game-controls > span:nth-child(2),
+  .game-controls > span:nth-child(3) {
+    display: none;
+  }
+  .touch-hint {
+    display: inline;
+    font-size: 9px;
+  }
+  .key {
+    font-size: 9px;
+    padding: 1px 3px;
+  }
+  .game-controls button {
+    font-size: 9px;
+  }
+  .room-status {
+    bottom: 82px;
+    left: 14px;
+    right: 14px;
+    font-size: 9px;
+  }
+  .minimap-hud {
+    right: 14px;
+    bottom: 118px;
+    padding: 7px;
+  }
+  .minimap-hud .eyebrow {
+    font-size: 7px;
+  }
+  #minimap {
+    width: 65px;
+    height: 65px;
+  }
+  .explore-panel {
+    top: 69px;
+    right: 14px;
+    width: min(285px, calc(100% - 28px));
+    max-height: calc(100% - 90px);
+    padding: 20px;
+  }
+  .directory button {
+    min-height: 58px;
+    padding: 12px 0;
+  }
+  #dialog-content {
+    padding: 22px;
+  }
+  #dialog-content h2 {
+    font-size: 28px;
+  }
+  .dialog-bottom {
+    padding: 15px 20px;
+  }
+}
+@media (max-width: 370px) {
+  .touch-hint {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  dialog::backdrop {
+    backdrop-filter: none;
+  }
+}
+.directory a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  text-align: left;
+  color: var(--ink);
+}
+.directory a:hover {
+  text-decoration: none;
+}
+.directory a:hover strong {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.directory a[data-visited="true"] .station-icon {
+  background: #cce0c5;
+}
+@media (max-width: 700px) {
+  .directory a {
+    min-height: 58px;
+    padding: 12px 0;
+  }
+}
+/* Shared retro typography for every topic, menu, and room control. */
+body {
+  font-size: 22px;
+  line-height: 1.3;
+}
+.game-top {
+  font-size: 17px;
+}
+.studio-name {
+  letter-spacing: 1px;
+}
+#visited-count {
+  font-size: 16px;
+}
+#toggle-directory {
+  font-size: 18px;
+}
+.welcome-bubble {
+  font-size: 18px;
+  line-height: 1.3;
+}
+.room-status {
+  font-size: 17px;
+}
+.game-controls,
+.game-controls button {
+  font-size: 18px;
+}
+.key {
+  font-size: 15px;
+}
+.eyebrow {
+  font-size: 16px;
+}
+.minimap-hud .eyebrow {
+  font-size: 12px;
+}
+.panel-intro h2 {
+  font-family: var(--display);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+.panel-intro p {
+  font-size: 20px;
+  line-height: 1.2;
+}
+.directory strong {
+  font-size: 22px;
+  font-weight: 400;
+}
+.directory small {
+  font-size: 17px;
+}
+.station-icon {
+  font-size: 17px;
+}
+.visit-mark {
+  font-size: 22px;
+}
+dialog {
+  border-radius: 0;
+  box-shadow: 8px 8px 0 #15263080;
+  font-family: var(--body);
+}
+dialog #dialog-content {
+  font-family: var(--body);
+  padding: 30px;
+}
+dialog #dialog-content h2 {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0;
+  margin-bottom: 26px;
+}
+dialog #dialog-content p {
+  font-size: 24px;
+  line-height: 1.3;
+}
+dialog #dialog-content .lead {
+  font-size: 30px;
+  line-height: 1.15;
+}
+dialog .eyebrow,
+dialog .dialog-bottom span {
+  font-family: var(--mono);
+  font-size: 17px;
+  letter-spacing: 1px;
+}
+dialog .dialog-bottom button {
+  font-family: var(--body);
+  font-size: 20px;
+  border-radius: 0;
+  padding: 6px 12px;
+}
+dialog #close-dialog {
+  font-size: 30px;
+}
+.project-entry h3 {
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+.project-entry p {
+  font-size: 23px !important;
+}
+.topic-meta {
+  font-size: 17px;
+  line-height: 1.3;
+}
+.project-entry .topic-meta {
+  font-size: 16px;
+}
+.content-link {
+  font-size: 20px;
+}
+.about-intro {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 25px;
+}
+.about-portrait {
+  width: 112px;
+  height: 112px;
+  flex: none;
+  object-fit: cover;
+  border: 3px solid var(--ink);
+  box-shadow: 5px 5px 0 #b9c9b6;
+}
+dialog[data-active-topic="about"] #dialog-content .lead {
+  font-size: 30px;
+  line-height: 1.15;
+  margin: 0;
+  color: var(--ink);
+}
+dialog[data-active-topic="about"] #dialog-content .about-story p {
+  font-size: 24px;
+  line-height: 1.3;
+  color: #40565a;
+  margin-bottom: 20px;
+}
+.about-story p:last-child {
+  margin-bottom: 0;
+}
+@media (max-width: 700px) {
+  .game-top {
+    font-size: 15px;
+  }
+  .studio-name {
+    letter-spacing: 0;
+  }
+  #toggle-directory {
+    font-size: 17px;
+  }
+  .welcome-bubble {
+    font-size: 17px;
+    line-height: 1.25;
+  }
+  .room-status {
+    font-size: 15px;
+  }
+  .game-controls {
+    font-size: 16px;
+    gap: 8px;
+  }
+  .game-controls button {
+    font-size: 14px;
+  }
+  .key {
+    font-size: 14px;
+  }
+  .touch-hint {
+    font-size: 12px;
+  }
+  .minimap-hud .eyebrow {
+    font-size: 10px;
+  }
+  dialog #dialog-content {
+    padding: 22px;
+  }
+  dialog #dialog-content h2 {
+    font-size: 16px;
+    line-height: 1.75;
+    margin-bottom: 22px;
+  }
+  dialog #dialog-content p {
+    font-size: 23px;
+    line-height: 1.25;
+  }
+  dialog #dialog-content .lead {
+    font-size: 26px;
+  }
+  .project-entry h3 {
+    font-size: 14px;
+  }
+  .about-intro {
+    gap: 18px;
+    align-items: flex-start;
+    margin-bottom: 23px;
+  }
+  .about-portrait {
+    width: 90px;
+    height: 90px;
+  }
+  dialog[data-active-topic="about"] #dialog-content .lead {
+    font-size: 26px;
+    line-height: 1.1;
+  }
+  dialog[data-active-topic="about"] #dialog-content .about-story p {
+    font-size: 23px;
+    line-height: 1.25;
+  }
+  dialog .dialog-bottom {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  dialog .dialog-bottom span {
+    font-size: 15px;
+    letter-spacing: 0.5px;
+  }
+}
+@media (max-width: 370px) {
+  dialog #dialog-content h2 {
+    font-size: 14px;
+  }
+  .about-intro {
+    gap: 14px;
+  }
+  .about-portrait {
+    width: 78px;
+    height: 78px;
+  }
+}
+/* The project journal is a single timeline, not a grid of disconnected cards. */
+dialog[data-active-topic="projects"] {
+  width: min(900px, calc(100% - 32px));
+  scrollbar-color: #809b8b var(--paper);
+}
+dialog[data-active-topic="projects"] .dialog-top {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--paper);
+}
+dialog[data-active-topic="projects"] #dialog-content {
+  padding: 28px 38px 32px;
+}
+dialog[data-active-topic="projects"] #dialog-content .journal-intro {
+  font-size: 24px;
+  margin: 0 0 20px;
+}
+.journal-controls {
+  position: sticky;
+  top: 63px;
+  z-index: 4;
+  background: var(--paper);
+  padding: 14px 0 18px;
+  border-bottom: 2px solid var(--ink);
+  box-shadow: 0 -12px 0 var(--paper);
+}
+.year-jumps,
+.project-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.year-jumps {
+  margin-bottom: 12px;
+}
+.year-jumps > span {
+  font-size: 16px;
+  letter-spacing: 1px;
+  margin-right: 12px;
+}
+.journal-controls button {
+  background: #e8e9dd;
+  border: 1px solid #8a9a8e;
+  padding: 5px 14px;
+  color: var(--ink);
+  font-size: 21px;
+  line-height: 1.2;
+}
+.journal-controls button:hover {
+  background: #d8e4d2;
+}
+.journal-controls button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+  box-shadow: 2px 2px 0 #a8b7a2;
+}
+.journal-controls button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.journal-count {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 18px;
+}
+.journal-year {
+  scroll-margin-top: 204px;
+  margin-top: 36px;
+}
+.journal-year > h3 {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font: 22px/1.5 var(--display);
+  margin: 0 0 26px;
+  color: var(--ink);
+}
+.journal-year > h3 > span {
+  font: 20px var(--body);
+  color: var(--muted);
+  letter-spacing: 0;
+}
+.journal-period {
+  border-left: 2px solid #9bae9f;
+  padding: 0 0 6px 27px;
+  margin: 0 0 26px 9px;
+}
+.journal-period > h4 {
+  position: relative;
+  font: 23px var(--body);
+  margin: 0 0 13px;
+  color: #426354;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.journal-period > h4:before {
+  content: "";
+  position: absolute;
+  left: -34px;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--paper);
+  background: #739585;
+  box-shadow: 0 0 0 1px #739585;
+}
+.journal-period > h4 > span {
+  font-size: 17px;
+  color: var(--muted);
+}
+.timeline-entry {
+  border-top: 1px solid var(--line);
+  padding: 20px 0;
+}
+.timeline-entry:last-child {
+  padding-bottom: 8px;
+}
+.timeline-entry summary {
+  cursor: pointer;
+  list-style: none;
+}
+.timeline-entry summary::-webkit-details-marker {
+  display: none;
+}
+.timeline-entry summary:focus-visible {
+  outline: 3px solid #f3b86a;
+  outline-offset: 6px;
+}
+.entry-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  font-size: 17px;
+}
+.entry-date {
+  color: var(--muted);
+}
+.achievement {
+  display: inline-block;
+  padding: 2px 7px;
+  border: 1px solid #b9bea6;
+  background: #e7e7ce;
+  color: #506044;
+  font-size: 16px;
+  line-height: 1.2;
+}
+/* An earned pixel reward, scoped to explicitly marked awards. No animation. */
+.achievement.achievement-reward {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  max-width: 100%;
+  padding: 8px 10px;
+  border: 2px solid #70501e;
+  background: #f4cc68;
+  color: #493413;
+  box-shadow:
+    inset 2px 2px 0 #fff3bd,
+    inset -2px -2px 0 #d69c36,
+    3px 3px 0 #70501e;
+  margin: 0 3px 3px 0;
+}
+.reward-trophy {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  color: #70501e;
+}
+.reward-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.reward-title {
+  font: 22px/1 var(--body);
+  letter-spacing: 0.5px;
+}
+.reward-subtitle {
+  font: 13px/1.1 var(--mono);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+.entry-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  margin-bottom: 11px;
+}
+.entry-heading h5 {
+  font: 14px/1.7 var(--display);
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--ink);
+}
+.entry-toggle {
+  margin-left: auto;
+  font-size: 27px;
+  line-height: 1;
+  color: #5c7b6e;
+}
+.project-disclosure[open] .entry-toggle {
+  font-size: 0;
+}
+.project-disclosure[open] .entry-toggle:after {
+  content: "−";
+  font-size: 27px;
+}
+dialog[data-active-topic="projects"] #dialog-content .timeline-entry p {
+  font-size: 23px;
+  line-height: 1.25;
+  margin: 0 0 15px;
+}
+.tech-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 15px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.tech-stack li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #42585a;
+  font-size: 17px;
+  line-height: 1.2;
+}
+.tech-stack img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex: none;
+}
+.stack-unconfirmed {
+  display: block;
+  font-size: 17px;
+  color: #7a6c52;
+}
+.entry-prompt {
+  display: block;
+  font-size: 16px;
+  color: #718174;
+  margin-top: 13px;
+}
+.timeline-entry[open] .entry-prompt {
+  display: none;
+}
+.entry-story {
+  padding: 17px 0 2px;
+  margin-top: 17px;
+  border-top: 1px dashed #b4beaf;
+}
+.project-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.project-links a,
+.journal-github {
+  font-size: 20px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  color: #355e54;
+}
+.journal-github {
+  display: inline-block;
+  margin-top: 12px;
+}
+/* Optional project media: original proportions, no frames for missing assets. */
+.project-media {
+  margin: 18px 0 22px;
+  min-width: 0;
+}
+.project-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  background: #1a2e36;
+}
+.project-media.pixel-art img {
+  image-rendering: pixelated;
+}
+.media-open {
+  display: block;
+  border: 1px solid #82978a;
+}
+.media-open:hover {
+  outline: 2px solid #82978a;
+  outline-offset: 2px;
+}
+.project-media figcaption {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  font-size: 17px;
+  color: var(--muted);
+}
+.project-media figcaption a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: #355e54;
+}
+.project-links {
+  align-items: center;
+  margin: 16px 0;
+}
+.project-links a.project-action {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 7px 14px;
+  text-decoration: none;
+  border: 1px solid var(--ink);
+  box-shadow: 2px 2px 0 #a8b7a2;
+}
+.project-links a.project-action:hover {
+  background: #435b60;
+}
+.project-disclosure {
+  margin-top: 17px;
+}
+.project-disclosure summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 20px;
+  color: #426354;
+  padding: 8px 0;
+}
+.project-disclosure .entry-story {
+  margin-top: 6px;
+}
+.project-gallery {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.project-gallery .project-media {
+  margin: 0;
+}
+.animation-stage {
+  position: relative;
+  background: #1a2e36;
+  border: 1px solid #82978a;
+  overflow: hidden;
+}
+.animation-stage img {
+  height: 100%;
+  object-fit: contain;
+}
+.animation-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 90%;
+  padding: 10px 16px;
+  background: var(--paper);
+  color: var(--ink);
+  border: 2px solid #82978a;
+  font: 21px/1.25 var(--body);
+  box-shadow: 3px 3px 0 #152630;
+}
+.animation-play:hover {
+  background: #dce7d5;
+}
+.animation-play[aria-pressed="true"] {
+  left: auto;
+  top: auto;
+  right: 10px;
+  bottom: 10px;
+  transform: none;
+  font-size: 18px;
+  padding: 5px 10px;
+}
+.animation-play:focus-visible {
+  outline: 3px solid #f3b86a;
+  outline-offset: 3px;
+}
+.project-video-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  min-height: 202px;
+  background: #1a2e36;
+  border: 1px solid #82978a;
+  overflow: hidden;
+}
+.project-video-stage iframe,
+.video-load {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.video-load {
+  padding: 0;
+  background: #1a2e36;
+  cursor: pointer;
+  color: var(--ink);
+  font: 21px/1.25 var(--body);
+}
+.video-load img {
+  height: 100%;
+  object-fit: cover;
+  image-rendering: auto;
+}
+.video-load span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 10px 16px;
+  background: var(--paper);
+  border: 2px solid #82978a;
+  box-shadow: 3px 3px 0 #152630;
+  white-space: nowrap;
+}
+.video-load:hover span {
+  background: #dce7d5;
+}
+.video-load:focus-visible {
+  outline: 3px solid #f3b86a;
+  outline-offset: -5px;
+}
+.project-video-stage [hidden] {
+  display: none;
+}
+@media (max-width: 700px) {
+  dialog[data-active-topic="projects"] #dialog-content {
+    padding: 22px 20px 28px;
+  }
+  .journal-controls {
+    padding: 10px 0 14px;
+  }
+  .year-jumps > span {
+    margin-right: 3px;
+    font-size: 15px;
+  }
+  .journal-controls button {
+    font-size: 19px;
+    padding: 5px 10px;
+  }
+  .journal-count {
+    font-size: 16px;
+  }
+  .journal-year {
+    scroll-margin-top: 199px;
+  }
+  .journal-year > h3 {
+    font-size: 19px;
+    gap: 12px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .journal-year > h3 > span {
+    font-size: 19px;
+  }
+  .journal-period {
+    margin-left: 5px;
+    padding-left: 19px;
+  }
+  .journal-period > h4 {
+    gap: 3px;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .journal-period > h4:before {
+    left: -26px;
+  }
+  .entry-meta {
+    gap: 7px;
+  }
+  .entry-heading h5 {
+    font-size: 11px;
+    line-height: 1.9;
+  }
+  .tech-stack {
+    gap: 9px 11px;
+  }
+  .tech-stack li {
+    font-size: 17px;
+  }
+  .tech-stack img {
+    width: 19px;
+    height: 19px;
+  }
+  dialog[data-active-topic="projects"] #dialog-content .timeline-entry p {
+    font-size: 22px;
+  }
+  .achievement {
+    font-size: 15px;
+  }
+}
+/* Leave YouTube's 200px minimum player width even in a 320px viewport. */
+@media (max-width: 360px) {
+  dialog[data-active-topic="projects"] #dialog-content {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+  .journal-period {
+    margin-left: 0;
+    padding-left: 16px;
+  }
+  .journal-period > h4:before {
+    left: -23px;
+  }
+}
+/* Upstairs: the same room language, with a readable career timeline and toolkit. */
+#change-floor {
+  border: 1px solid #85918b;
+  background: #edebd9;
+  color: var(--ink);
+  font: 18px var(--mono);
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+#change-floor:hover {
+  background: #d3e0c9;
+}
+#change-floor:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #dba956;
+  outline-offset: 3px;
+}
+.career-timeline {
+  list-style: none;
+  margin: 30px 0 0 8px;
+  padding: 0 0 0 24px;
+  border-left: 2px solid #9bae9f;
+}
+.career-timeline > li {
+  position: relative;
+  padding: 0 0 30px;
+}
+.career-timeline > li:last-child {
+  padding-bottom: 0;
+}
+.career-timeline > li:before {
+  content: "";
+  position: absolute;
+  left: -31px;
+  top: 5px;
+  width: 12px;
+  height: 12px;
+  background: #739585;
+  border: 2px solid var(--paper);
+  box-shadow: 0 0 0 1px #739585;
+}
+.career-date {
+  font-size: 18px;
+  color: #60736a;
+}
+.career-timeline h3,
+.skill-group h3 {
+  font: 13px/1.7 var(--display);
+  margin: 12px 0 10px;
+}
+dialog #dialog-content .career-company {
+  font-size: 24px;
+  color: #385e53;
+  margin: 0 0 14px;
+}
+.career-company span {
+  display: block;
+  font-size: 20px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.career-timeline ul {
+  padding-left: 20px;
+  font-size: 22px;
+  line-height: 1.3;
+  color: #526467;
+}
+.career-timeline ul li {
+  margin-bottom: 10px;
+}
+.skill-group {
+  padding: 22px 0;
+  border-top: 1px solid var(--line);
+}
+.skill-group:last-child {
+  padding-bottom: 0;
+}
+.skill-group h3 {
+  margin: 0 0 20px;
+}
+.skill-group .tech-stack {
+  gap: 16px 24px;
+}
+.skill-group .tech-stack li {
+  font-size: 23px;
+  gap: 9px;
+}
+.skill-group .tech-stack img {
+  width: 24px;
+  height: 24px;
+}
+.ai-skills {
+  padding-left: 21px;
+  font-size: 23px;
+  line-height: 1.4;
+  color: #42585a;
+  margin: 0 0 18px;
+}
+@media (max-width: 700px) {
+  #change-floor {
+    font-size: 16px;
+    padding: 7px 8px;
+  }
+  .top-actions {
+    gap: 5px;
+  }
+  .studio-name {
+    font-size: 13px;
+    padding: 12px 8px;
+  }
+  .studio-name .live-light {
+    margin-right: 2px;
+  }
+  .career-timeline {
+    margin-left: 3px;
+    padding-left: 19px;
+  }
+  .career-timeline > li:before {
+    left: -26px;
+  }
+  .career-timeline h3,
+  .skill-group h3 {
+    font-size: 11px;
+  }
+  .career-date {
+    font-size: 17px;
+  }
+  .career-timeline ul {
+    font-size: 21px;
+  }
+  .skill-group .tech-stack {
+    gap: 15px;
+  }
+}
+@media (max-width: 370px) {
+  .studio-name .live-light {
+    display: none;
+  }
+  .studio-name {
+    font-size: 12px;
+    padding: 12px 6px;
+  }
+  #change-floor {
+    font-size: 14px;
+    padding: 7px 6px;
+  }
+  #toggle-directory {
+    font-size: 15px;
+    padding: 7px 6px;
+  }
+}

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Step into Jereme's pixel room. Explore projects, games, and the story of a software engineering student building AI and everyday automations."
+    />
+    <title>Jereme's room — come explore</title>
+    <link rel="stylesheet" href="room.css?v=upstairs-bedroom-1" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23f3b86a' d='M2 2h12v12H2z'/%3E%3Cpath fill='%2323333d' d='M4 4h8v6H4zM7 10h2v2H7z'/%3E%3C/svg%3E"
+    />
+  </head>
+  <body>
+    <main>
+      <section class="game-shell" aria-label="Jereme's explorable pixel room">
+        <h1 class="sr-only">Jereme’s studio</h1>
+        <div class="game-top">
+          <span class="studio-name"
+            ><span class="live-light" aria-hidden="true"></span>
+            <span id="room-name">JEREME’S STUDIO</span></span
+          >
+          <div class="top-actions">
+            <span id="visited-count">0 / 10 spots explored</span
+            ><button id="change-floor" type="button">Upstairs ↑</button
+            ><button
+              id="toggle-directory"
+              type="button"
+              aria-expanded="false"
+              aria-controls="explore-panel"
+            >
+              Explore ☰
+            </button>
+          </div>
+        </div>
+        <div class="canvas-wrap">
+          <canvas
+            id="room"
+            width="1000"
+            height="680"
+            tabindex="0"
+            aria-label="Isometric pixel room. Click a floor tile to walk. Click furniture to walk over and explore. Use arrow keys or W A S D to move, and E or Enter near furniture to read. You can also use the Explore menu."
+            aria-describedby="controls"
+          ></canvas>
+          <div class="welcome-bubble" id="welcome">
+            Hey! I’m Jereme.<br />Click around. There’s plenty to
+            discover.<button aria-label="Dismiss welcome" id="dismiss-welcome">
+              ×
+            </button>
+          </div>
+          <div id="room-status" class="room-status" role="status">
+            Your first stop? Pick a corner.
+          </div>
+        </div>
+        <div class="game-controls" id="controls">
+          <span><span class="key">↖</span> Click to walk</span
+          ><span><span class="key">WASD</span> Move</span
+          ><span><span class="key">E</span> Explore</span
+          ><span class="touch-hint">Drag to look around</span
+          ><button id="motion" type="button" aria-pressed="false">
+            Pause ambience
+          </button>
+        </div>
+        <div class="minimap-hud">
+          <span class="eyebrow">YOU ARE HERE</span
+          ><canvas
+            id="minimap"
+            width="112"
+            height="112"
+            aria-label="Mini-map of the room"
+          ></canvas>
+        </div>
+        <aside
+          id="explore-panel"
+          class="explore-panel"
+          aria-label="Explore menu"
+          hidden
+        >
+          <div class="panel-intro">
+            <span class="eyebrow">THE ROOM DIRECTORY</span>
+            <h2>Pick a corner.</h2>
+            <p>Walk over to an object, or open a topic here.</p>
+          </div>
+          <nav class="directory" aria-label="Portfolio topics">
+            <button data-topic="about">
+              <span class="station-icon">01</span
+              ><span
+                ><strong>About me</strong><small>The story so far</small></span
+              ><span class="visit-mark" aria-hidden="true">+</span>
+            </button>
+            <button data-topic="projects">
+              <span class="station-icon">02</span
+              ><span
+                ><strong>Projects</strong><small>Things I’ve built</small></span
+              ><span class="visit-mark" aria-hidden="true">+</span>
+            </button>
+            <button data-topic="games">
+              <span class="station-icon">03</span
+              ><span><strong>Games</strong><small>Where it started</small></span
+              ><span class="visit-mark" aria-hidden="true">+</span>
+            </button>
+            <button data-topic="hobbies">
+              <span class="station-icon">04</span
+              ><span
+                ><strong>Hobbies & interests</strong
+                ><small>Outside the syllabus</small></span
+              ><span class="visit-mark" aria-hidden="true">+</span>
+            </button>
+            <a data-link="contact" href="mailto:jerememetanjm@gmail.com"
+              ><span class="station-icon">05</span
+              ><span><strong>Mailbox</strong><small>Email Jereme</small></span
+              ><span class="visit-mark" aria-hidden="true">↗</span></a
+            >
+            <a
+              data-link="linkedin"
+              href="https://www.linkedin.com/in/jereme-tan/"
+              target="_blank"
+              rel="noopener noreferrer"
+              ><span class="station-icon">06</span
+              ><span
+                ><strong>LinkedIn frame</strong
+                ><small>Open LinkedIn profile</small></span
+              ><span class="visit-mark" aria-hidden="true">↗</span></a
+            >
+            <a
+              data-link="github"
+              href="https://github.com/jerememetan"
+              target="_blank"
+              rel="noopener noreferrer"
+              ><span class="station-icon">07</span
+              ><span
+                ><strong>GitHub frame</strong
+                ><small>Open GitHub profile</small></span
+              ><span class="visit-mark" aria-hidden="true">↗</span></a
+            >
+            <button data-topic="resume">
+              <span class="station-icon">08</span
+              ><span
+                ><strong>Resume chest</strong
+                ><small>A treasure by the window</small></span
+              ><span class="visit-mark" aria-hidden="true">+</span>
+            </button>
+            <button data-topic="experience">
+              <span class="station-icon">09</span
+              ><span
+                ><strong>Work experience</strong
+                ><small>Upstairs · The journey so far</small></span
+              ><span class="visit-mark" aria-hidden="true">+</span>
+            </button>
+            <button data-topic="skills">
+              <span class="station-icon">10</span
+              ><span
+                ><strong>Skills</strong
+                ><small>Upstairs · My building toolkit</small></span
+              ><span class="visit-mark" aria-hidden="true">+</span>
+            </button>
+          </nav>
+        </aside>
+      </section>
+    </main>
+    <dialog id="topic-dialog" aria-labelledby="dialog-title">
+      <div class="dialog-top">
+        <span id="dialog-category" class="eyebrow"></span
+        ><button id="close-dialog" aria-label="Close topic">×</button>
+      </div>
+      <div id="dialog-content"></div>
+      <div class="dialog-bottom">
+        <span id="dialog-progress"></span
+        ><button id="back-room">Back to the room</button>
+      </div>
+    </dialog>
+    <script src="projects.js?v=emeraldllm-video-1" defer></script>
+    <script src="bedroom.js?v=upstairs-bedroom-1" defer></script>
+    <script src="room.js?v=upstairs-bedroom-1" defer></script>
+  </body>
+</html>

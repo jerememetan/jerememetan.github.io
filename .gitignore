@@ -1,0 +1,19 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local tooling and temporary files
+node_modules/
+*.log
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Our preview screenshots at the repository root
+/*.png
