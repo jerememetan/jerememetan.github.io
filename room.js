@@ -7,6 +7,7 @@
   const status = document.querySelector("#room-status"),
     dialog = document.querySelector("#topic-dialog");
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+  const sky = window.PixelSky?.create(document.querySelector("#sky"));
   const view = { width: 1000, height: 680, scale: 1, x: 0, y: 0, dpr: 1 };
   function resize() {
     const r = canvas.getBoundingClientRect();
@@ -519,6 +520,10 @@
   updateMotion();
   motion.addEventListener("click", () => {
     paused = !paused;
+    updateMotion();
+  });
+  reduced.addEventListener("change", (event) => {
+    paused = event.matches;
     updateMotion();
   });
   const P = {
@@ -1128,12 +1133,7 @@
   function draw(time) {
     ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
     ctx.imageSmoothingEnabled = false;
-    rect(0, 0, view.width, view.height, "#263a45");
-    for (let k = 0; k < 60; k++) {
-      const x = (k * 137 + 59) % view.width,
-        y = (k * 71 + 28) % view.height;
-      rect(x, y, 2, k % 4 === 0 ? 4 : 2, "#425862");
-    }
+    ctx.clearRect(0, 0, view.width, view.height);
     ctx.setTransform(
       view.dpr * view.scale,
       0,
@@ -1496,7 +1496,7 @@
   function frame(time) {
     const dt = Math.min(50, time - lastTime || 16);
     lastTime = time;
-    if (!paused) clock += dt;
+    if (!paused && !document.hidden) clock += dt;
     if (climb) {
       climb.progress = Math.min(1, climb.progress + dt / 650);
       if (climb.progress === 1) finishClimb();
@@ -1522,6 +1522,7 @@
         }
       }
     }
+    if (sky) sky.draw(clock / 1000);
     draw(clock);
     requestAnimationFrame(frame);
   }
