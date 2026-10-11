@@ -181,7 +181,7 @@
     resume: {
       category: "08 / THE TREASURE CHEST",
       title: "You found my resume!",
-      body: '<p class="lead">A little treasure from my software engineering journey.</p><p>My experience, projects and skills—all in one PDF.</p><a class="content-link" href="assets/Jereme-Tan-Resume.pdf?v=c2341bc9" target="_blank" rel="noopener noreferrer">View resume ↗</a><a class="content-link" href="assets/Jereme-Tan-Resume.pdf?v=c2341bc9" download="Jereme-Tan-Resume.pdf">Download PDF ↓</a>',
+      body: '<p class="lead">A little treasure from my software engineering journey.</p><p>My experience, projects and skills—all in one PDF.</p><a class="content-link" href="assets/Jereme-Tan-Resume.pdf?v=e35788e9" target="_blank" rel="noopener noreferrer">View resume ↗</a><a class="content-link" href="assets/Jereme-Tan-Resume.pdf?v=e35788e9" download="Jereme-Tan-Resume.pdf">Download PDF ↓</a>',
     },
   };
   const staircase = {
