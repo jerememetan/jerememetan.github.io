@@ -36,96 +36,11 @@
     moving: false,
     direction: 1,
   };
-  const stations = [
-    {
-      id: "about",
-      name: "About me",
-      i: 2,
-      j: 2,
-      access: [3, 3],
-      kind: "desk",
-      number: "01",
-    },
-    {
-      id: "projects",
-      name: "Projects",
-      i: 7,
-      j: 2,
-      access: [7, 3],
-      kind: "work",
-      number: "02",
-    },
-    {
-      id: "games",
-      name: "Games",
-      i: 9,
-      j: 6,
-      access: [8, 6],
-      kind: "arcade",
-      number: "03",
-    },
-    {
-      id: "hobbies",
-      name: "Hobbies",
-      i: 2,
-      j: 8,
-      access: [3, 8],
-      kind: "books",
-      number: "04",
-    },
-    {
-      id: "contact",
-      name: "Mailbox",
-      i: 8,
-      j: 10,
-      access: [7, 10],
-      kind: "mail",
-      number: "05",
-    },
-    {
-      id: "linkedin",
-      name: "LinkedIn",
-      i: 10,
-      j: 0,
-      access: [9, 0],
-      kind: "social",
-      number: "06",
-      frameX: 720,
-      frameY: 138,
-    },
-    {
-      id: "github",
-      name: "GitHub",
-      i: 7,
-      j: 0,
-      access: [6, 0],
-      kind: "social",
-      number: "07",
-      frameX: 584,
-      frameY: 70,
-    },
-    {
-      id: "resume",
-      name: "Resume",
-      i: 0,
-      j: 4,
-      access: [1, 4],
-      kind: "treasure",
-      number: "08",
-    },
-  ];
+  const Layout = window.RoomLayout;
+  const stations = Layout.stations;
   const Bedroom = window.Bedroom;
   const ladders = [
-    {
-      id: "upstairs",
-      name: "Upstairs",
-      i: 11,
-      j: 2,
-      access: [10, 2],
-      kind: "ladder",
-      number: "↑",
-      floor: 0,
-    },
+    Layout.ladder,
     {
       id: "downstairs",
       name: "Downstairs",
@@ -184,45 +99,7 @@
       body: '<p class="lead">A little treasure from my software engineering journey.</p><p>My experience, projects and skills—all in one PDF.</p><a class="content-link" href="assets/Jereme-Tan-Resume.pdf?v=e35788e9" target="_blank" rel="noopener noreferrer">View resume ↗</a><a class="content-link" href="assets/Jereme-Tan-Resume.pdf?v=e35788e9" download="Jereme-Tan-Resume.pdf">Download PDF ↓</a>',
     },
   };
-  const staircase = {
-    i: 0,
-    j: 4,
-    width: 1.4,
-    heights: [60, 60, 40, 20],
-    maxRise: 20,
-  };
-  const blocked = new Set([
-    "1,1",
-    "2,1",
-    "1,2",
-    "2,2",
-    "6,1",
-    "7,1",
-    "6,2",
-    "7,2",
-    "9,6",
-    "9,5",
-    "1,8",
-    "2,8",
-    "1,7",
-    "2,7",
-    "1,9",
-    "8,10",
-    "0,9",
-    "10,0",
-    "10,10",
-    "4,9",
-    "5,9",
-    "4,10",
-    "5,10",
-    "4,8",
-    "5,8",
-    "0,4",
-    "0,5",
-    "1,5",
-    "2,5",
-    "3,5",
-  ]);
+  const staircase = Layout.staircase;
   const key = (i, j) => `${i},${j}`;
   function activeStations() {
     return [...(floor === 0 ? stations : Bedroom.stations), ladders[floor]];
@@ -233,21 +110,21 @@
     );
   }
   function walkable(i, j) {
+    if (floor === 0) return Layout.walkable(i, j);
     return (
       i >= 0 &&
       j >= 0 &&
       i < 12 &&
       j < 12 &&
       !(i === 11 && j === 2) &&
-      !(floor === 0 ? blocked : Bedroom.blocked).has(key(i, j))
+      !Bedroom.blocked.has(key(i, j))
     );
   }
   function floorHeight(i, j) {
-    return floor === 0 && j === staircase.j
-      ? staircase.heights[i - staircase.i] || 0
-      : 0;
+    return floor === 0 ? Layout.floorHeight(i, j) : 0;
   }
   function canStep(i, j, ni, nj) {
+    if (floor === 0) return Layout.canStep(i, j, ni, nj);
     const from = floorHeight(i, j),
       to = floorHeight(ni, nj);
     return (
@@ -264,6 +141,7 @@
     return from + (to - from) * player.progress;
   }
   function route(start, end) {
+    if (floor === 0) return Layout.route(start, end);
     const queue = [start],
       seen = new Set([key(...start)]),
       parents = new Map();
@@ -735,7 +613,7 @@
       rect(-3, -4, 6, 8, P.ink);
       rect(-2, -3, 4, 3, "#91b4a0");
     });
-    stationLabel(s, p.x, p.y - 131, time, p);
+    stationLabel(s, p.x + 55, p.y + 25, time, p);
   }
   function arcade(s, time) {
     const p = point(s.i + 0.5, s.j + 0.5),
@@ -768,36 +646,38 @@
     stationLabel(s, p.x + 78, p.y - 49, time, p);
   }
   function books(s, time) {
-    const p = point(s.i + 0.5, s.j + 0.5);
-    box(s.i - 0.6, s.j - 0.6, 1.5, 1, 68, P.woodLight, P.wood, P.woodDark);
-    surface(s.i - 0.6, s.j + 0.4, 68, false, () => {
-      rect(3, 4, 39, 59, P.woodDark);
-      rect(5, 6, 35, 24, "#a18461");
-      rect(5, 35, 35, 24, "#a18461");
+    const p = point(1, s.j + 0.4);
+    // Against i=0: the front lies on a constant-i plane and faces into the room.
+    box(0.2, s.j - 0.8, 1.1, 2.4, 68, P.woodLight, P.wood, P.woodDark);
+    const face = point(1.3, s.j + 1.6);
+    ctx.save();
+    ctx.transform(...Layout.faceTransform("left"), face.x, face.y - 68);
+      rect(3, 4, 66, 59, P.woodDark);
+      rect(5, 6, 62, 24, "#a18461");
+      rect(5, 35, 62, 24, "#a18461");
       const colors = [P.teal, P.paper, P.pink, P.yellow, "#6d8898"];
       for (let row = 0; row < 2; row++)
-        for (let k = 0; k < 5; k++) {
+        for (let k = 0; k < 9; k++) {
           const x = 6 + k * 7,
             bottom = row ? 59 : 30,
             height = 20 - (k % 3) * 3;
-          rect(x, bottom - height, 5, height, colors[row ? 4 - k : k]);
+          rect(x, bottom - height, 5, height, colors[(row ? 8 - k : k) % colors.length]);
           rect(x, bottom - height, 1, height, "#00000020");
           rect(x + 1, bottom - height + 4, 3, 1, P.paper);
           rect(x + 1, bottom - 4, 3, 1, "#ffffff60");
         }
-      rect(0, 30, 45, 5, P.woodLight);
-      rect(0, 59, 45, 5, P.woodLight);
+      rect(0, 30, 72, 5, P.woodLight);
+      rect(0, 59, 72, 5, P.woodLight);
       rect(0, 0, 3, 68, P.woodLight);
-      rect(42, 0, 3, 68, P.woodLight);
-    });
-    plant(s.i - 1, s.j + 1);
-    stationLabel(s, p.x, p.y - 107, time);
+      rect(69, 0, 3, 68, P.woodLight);
+    ctx.restore();
+    stationLabel(s, p.x - 15, p.y - 103, time, p);
   }
   function mail(s, time) {
     const p = point(s.i + 0.5, s.j + 0.5);
     rect(p.x - 5, p.y - 50, 11, 50, P.woodDark);
     rect(p.x - 10, p.y - 1, 21, 5, "#5e493a");
-    box(s.i - 0.35, s.j - 0.25, 0.85, 0.7, 63, "#739c91", "#4c7b75", "#345c5e");
+    box(s.i + 0.1, s.j + 0.15, 0.85, 0.7, 63, "#739c91", "#4c7b75", "#345c5e");
     rect(p.x - 17, p.y - 72, 30, 5, "#8eb0a0");
     rect(p.x - 21, p.y - 67, 38, 5, "#8eb0a0");
     rect(p.x - 15, p.y - 59, 27, 5, "#243e44");
@@ -812,11 +692,12 @@
     );
     rect(p.x + 19, p.y - 72, 4, 28, "#925253");
     rect(p.x + 23, p.y - 72, 15, 10, "#d07c70");
-    stationLabel(s, p.x - 85, p.y - 24, time, p);
+    stationLabel(s, p.x - 69, p.y - 78, time, p);
   }
   function socialFrame(s) {
-    const x = s.frameX,
-      y = s.frameY,
+    const wall = point(s.i, 0);
+    const x = wall.x,
+      y = wall.y - 118,
       lit = hover === s.id;
     ctx.save();
     ctx.transform(0.8, 0.4, 0, 0.8, x, y);
@@ -1074,63 +955,34 @@
     text("jereme", p.x, y - 76, "#40565a", 9, "center");
   }
   function wallDecor() {
-    // Pixel windows on the two back walls, with late-afternoon light.
-    poly(
-      [
-        [312, 80],
-        [412, 30],
-        [412, 104],
-        [312, 154],
-      ],
-      "#807559",
-    );
-    poly(
-      [
-        [319, 83],
-        [405, 40],
-        [405, 100],
-        [319, 143],
-      ],
-      "#a5c9bf",
-    );
-    poly(
-      [
-        [324, 98],
-        [400, 60],
-        [400, 89],
-        [324, 127],
-      ],
-      "#c2dad0",
-    );
-    poly(
-      [
-        [359, 63],
-        [365, 60],
-        [365, 120],
-        [359, 123],
-      ],
-      "#ede0c0",
-    );
-    poly(
-      [
-        [319, 114],
-        [405, 71],
-        [405, 77],
-        [319, 120],
-      ],
-      "#ede0c0",
-    );
+    // The frame uses the same wall plane as the shelf, not screen-space offsets.
+    poly(Layout.windowCorners(), P.woodDark);
+    const frame = Layout.windowFrame;
+    const anchor = point(frame.i, frame.j);
+    ctx.save();
+    ctx.transform(...Layout.faceTransform("left"), anchor.x, anchor.y - frame.height);
+    rect(3, 3, 84, 51, P.paper);
+    rect(6, 6, 78, 45, "#94bdb6");
+    rect(9, 9, 72, 14, "#c2dad0");
+    rect(9, 26, 72, 22, "#a5c9bf");
+    rect(43, 4, 4, 49, P.paper);
+    rect(4, 26, 82, 4, P.paper);
+    rect(-2, 54, 94, 4, "#b99a73");
+    ctx.restore();
     const p = point(1, 1);
     rect(p.x - 18, p.y - 125, 37, 26, P.woodDark);
     rect(p.x - 15, p.y - 122, 31, 20, P.paper);
     text("BUILD", p.x, p.y - 108, P.ink, 9, "center");
     // A quiet wall clock and a tiny plant on the shelf.
-    rect(790, 134, 24, 25, P.woodDark);
-    rect(793, 137, 18, 19, P.paper);
-    rect(801, 141, 2, 8, P.ink);
-    rect(802, 148, 5, 2, P.ink);
+    surface(10.6, 0, 114, false, () => {
+      rect(0, 0, 23, 25, P.woodDark);
+      rect(3, 3, 17, 19, P.paper);
+      rect(11, 7, 2, 8, P.ink);
+      rect(12, 14, 5, 2, P.ink);
+    });
   }
   function draw(time) {
+    targets = [];
     ctx.setTransform(view.dpr, 0, 0, view.dpr, 0, 0);
     ctx.imageSmoothingEnabled = false;
     ctx.clearRect(0, 0, view.width, view.height);
@@ -1226,7 +1078,10 @@
       keyboard,
       stationLabel,
     };
-    if (floor === 0) wallDecor();
+    if (floor === 0) {
+      wallDecor();
+      stations.filter((s) => s.kind === "social").forEach(socialFrame);
+    }
     else Bedroom.wallDecor(drawing);
     for (let i = 0; i < 12; i++)
       for (let j = 0; j < 12; j++)
@@ -1253,23 +1108,30 @@
       "#bc9c73",
     );
     if (floor === 0) {
-      const rug = [point(4, 4), point(8.5, 4), point(8.5, 9), point(4, 9)];
+      const rug = [point(4.5, 6.8), point(11, 6.8), point(11, 11.2), point(4.5, 11.2)];
       poly(
-        rug.map((p) => [p.x, p.y + 9]),
+        rug.map((p) => [p.x, p.y + 1]),
         "#69918a",
         "#507a73",
       );
       const rugInner = [
-        point(4.2, 4.2),
-        point(8.3, 4.2),
-        point(8.3, 8.8),
-        point(4.2, 8.8),
+        point(4.7, 7),
+        point(10.8, 7),
+        point(10.8, 11),
+        point(4.7, 11),
       ];
       poly(
-        rugInner.map((p) => [p.x, p.y + 9]),
+        rugInner.map((p) => [p.x, p.y + 1]),
         "#86aa9a",
         "#bac8ac",
       );
+      poly([point(1.3, 7), point(2.7, 7), point(2.7, 10.9), point(1.3, 10.9)].map(p => [p.x, p.y + 1]), "#b3b79a", "#8c9c83");
+      // A small doormat establishes the front edge as the entrance.
+      surface(8.4, 11.2, 0, true, () => {
+        rect(0, 0, 35, 17, "#b3926d");
+        rect(3, 3, 29, 11, "#cdb18a");
+        text("HELLO", 17, 11, P.woodDark, 5, "center");
+      });
       if (path.length) {
         for (const [i, j] of path) {
           const p = point(i + 0.5, j + 0.5);
@@ -1279,24 +1141,45 @@
       if (hover === "floor" && mouseTile && walkable(...mouseTile)) {
         tile(...mouseTile, "#ebdaaf");
       }
-      // A small couch and coffee table give the room somewhere to simply hang out.
-      box(4, 9.3, 2, 1, 24, "#d69878", "#b57761", "#8f5e55");
-      box(4, 10, 2, 0.3, 45, "#e3b18d", "#ae7563", "#966053");
-      box(4.2, 9.5, 0.75, 0.65, 27, "#e5b395", "#b97c64", "#a3695c");
-      box(5.05, 9.5, 0.75, 0.65, 27, "#d6a487", "#b97c64", "#a3695c");
-      box(4, 7.8, 1.5, 0.7, 18, "#dbb37a", "#ab8356", "#8e6a4a");
-      const cp = point(4.7, 8.1);
-      rect(cp.x - 4, cp.y - 25, 11, 9, P.paper);
-      rect(cp.x + 6, cp.y - 23, 4, 4, P.paper);
     } else Bedroom.rug(drawing);
     const decorations =
       floor === 0
         ? [
-            { i: 0, j: 9 },
-            { i: 10, j: 0 },
-            { i: 10, j: 10 },
+            { i: 0, j: 10 },
+            { i: 11, j: 0 },
+            { i: 11, j: 9 },
           ].map((s) => ({ depth: s.i + s.j, fn: () => plant(s.i, s.j) }))
         : Bedroom.decorations(drawing);
+    if (floor === 0) {
+      // Paint each short wall segment at its own depth so walkers can pass in front or behind.
+      for (const wall of Layout.partitions) {
+        for (let u = 0; u < Math.ceil(wall.w); u++) for (let v = 0; v < Math.ceil(wall.d); v++) {
+          const i = wall.i + u, j = wall.j + v;
+          const w = Math.min(1, wall.w - u), d = Math.min(1, wall.d - v);
+          decorations.push({ depth: i + j + (w + d) / 2, fn: () => {
+            box(i, j, w, d, wall.height, "#d3b991", "#d9c6a6", "#bca583");
+            box(i, j, w, d, 5, P.woodDark, "#b99c78", "#9f815f");
+            ctx.save();
+            ctx.translate(0, -wall.height);
+            box(i - 0.04, j - 0.04, w + 0.08, d + 0.08, 3, "#e9d6b3", "#c7ad87", "#b59a77");
+            ctx.restore();
+          }});
+        }
+      }
+      decorations.push({ depth: 15.7, fn: () => {
+        box(5, 9.3, 2, 1, 24, "#d69878", "#b57761", "#8f5e55");
+        box(5, 10, 2, 0.3, 45, "#e3b18d", "#ae7563", "#966053");
+        box(5.2, 9.5, 0.75, 0.65, 27, "#e5b395", "#b97c64", "#a3695c");
+        box(6.05, 9.5, 0.75, 0.65, 27, "#d6a487", "#b97c64", "#a3695c");
+      }});
+      decorations.push({ depth: 14.1, fn: () => {
+        box(5, 7.8, 1.5, 0.7, 18, "#dbb37a", "#ab8356", "#8e6a4a");
+        surface(5.7, 8.1, 18, true, () => {
+          rect(-4, -4, 11, 9, P.paper);
+          rect(6, -2, 4, 4, P.paper);
+        });
+      }});
+    }
     const objects = [
       ...activeStations()
         .filter((s) => s.kind !== "social")
@@ -1315,10 +1198,7 @@
       { depth: player.i + player.j, fn: () => avatar(time) },
       ...decorations,
     ];
-    targets = [];
     objects.sort((a, b) => a.depth - b.depth).forEach((obj) => obj.fn());
-    if (floor === 0)
-      stations.filter((s) => s.kind === "social").forEach(socialFrame);
     drawMini();
   }
   function drawMini() {
